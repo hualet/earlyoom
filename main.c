@@ -11,6 +11,7 @@
 
 #include "meminfo.h"
 #include "kill.h"
+#include "process.h"
 
 int enable_debug = 0;
 
@@ -139,8 +140,18 @@ int main(int argc, char *argv[])
 		{
 			fprintf(stderr, "Out of memory! avail: %lu MiB < min: %lu MiB\n",
 				m.MemAvailable / 1024, mem_min / 1024);
-			handle_oom(procdir, 9, kernel_oom_killer, ignore_oom_score_adj);
-			oom_cnt++;
+
+			char *arg1 = "/usr/bin/zenity";
+			char *arg2 = "--question";
+			char *arg3 = "--text='系统内存不足，清理掉占用内存最多的程序？'";
+			char *arg[] = {arg1, arg2, arg3};
+
+			int status = run_process(arg1, arg);
+			if (status == 0) {
+				fprintf(stderr, "triggering oom killder");
+				handle_oom(procdir, 9, kernel_oom_killer, ignore_oom_score_adj);
+				oom_cnt++;
+			}
 		}
 		
 		usleep(100000); // 100ms

@@ -1,0 +1,1 @@
+int run_process(const char *prog, char *const argv[]);
