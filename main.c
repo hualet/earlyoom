@@ -141,12 +141,13 @@ int main(int argc, char *argv[])
 			fprintf(stderr, "Out of memory! avail: %lu MiB < min: %lu MiB\n",
 				m.MemAvailable / 1024, mem_min / 1024);
 
-			char *arg1 = "/usr/bin/zenity";
-			char *arg2 = "--question";
-			char *arg3 = "--text='系统内存不足，清理掉占用内存最多的程序？'";
-			char *arg[] = {arg1, arg2, arg3};
+			char *args[4];
+			args[0] = "/usr/bin/zenity";
+			args[1] = "--question";
+			args[2] = "--text='系统内存不足，清理掉占用内存最多的程序？'";
+			args[3] = NULL;
 
-			int status = run_process(arg1, arg);
+			int status = run_process(args[0], args);
 			if (status == 0) {
 				fprintf(stderr, "triggering oom killder");
 				handle_oom(procdir, 9, kernel_oom_killer, ignore_oom_score_adj);
